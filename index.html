@@ -1,1 +1,222 @@
-<h1>Hello</h1>
+<!DOCTYPE html> 
+<html> 
+<body> 
+
+<h1>World Cup Simulation </h1> 
+<p> Created in April 2019 as part 2 of a sport simulation project. <a href = "https://github.com/maturanamateo/worldcup">GitHub Link</a></p> 
+<hr> 
+<h2>Methodology</h2>
+For this simulation, I decided to simulate the world cup itself and a qualification round (not exactly the same as how qualifiers are run though). To rank the teams, I used the official FIFA/Coca-Cola rankings. 
+<p><strong>Implementation of Compete methods</strong></p>
+The following code is found in the <code>Team.java</code> file. 
+<pre>
+<code>
+  public void compete(Team rival) {
+    // temp just for testing 
+    double constant;
+    double coeff = .6;
+    double modifier = 400;
+    if (this.ranking > rival.ranking) {
+      constant = (coeff)*((rival.ranking - modifier)/(this.ranking - modifier));
+    }
+    else {
+      constant = (coeff)*((this.ranking - modifier)/(rival.ranking - modifier));
+    }
+    double random = Math.random();
+    if (random < constant) {
+      this.ties++;
+      rival.ties++;
+      this.points++;
+      rival.points++;
+    }
+    else {
+      int constant2 = 850;
+      //modify constant as you see fit
+      //must be greater than the lowest team's ranking (858)
+      int rank_a = this.ranking - constant2;
+      int rank_b = rival.ranking - constant2;
+      int rank_add = rank_a + rank_b;
+      int random2 = (int)(Math.random()*rank_add);
+      if (random2 < rank_a) {
+	this.wins++;
+	rival.losses++;
+        this.points += 3;
+      }
+      else {
+        this.losses++;
+	rival.wins++;
+        rival.points += 3;
+      }
+    }					
+  }
+	
+  public boolean postCompete(Team rival) {
+    int constant = 1300;
+    //modify constant as you see fit
+    //must be greater than the lowest team's ranking (858)
+    int rank_a = this.ranking - constant;
+    int rank_b = rival.ranking - constant;
+    int rank_add = rank_a + rank_b;
+    int random = (int)(Math.random()*rank_add);
+    if (random < rank_a) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+</code>
+</pre>
+Here, <code>.compete(Team rival)</code> is used for qualifying and group matches (where ties are allowed), and <code>.postCompete(Team rival)</code> is used for all elimination matches. 
+<p><u> Compete method </u></p> 
+First, I had to account for the possibility of draws happening. The variable <code>coeff </code> here is simply the probability of two teams of equal ranking drawing. The variable <code>modifier</code> was changed until desirable distributions were reached. If a draw does not happen, then the winning team is calculated by a similar process to how wins were calculated in my baseball program. Given Team A and Team B with ranks A' and B', the probability of Team A winning is A'/(A' + B'). 
+<p><u>postCompete method </u></p> 
+Here, the constant value is something that is easily modified. I adjusted the team's ranks by subtracting the constant value, and then the winning team is found by the same process as the regular compete method. 
+<p><strong>Implementation of WorldCup Class</strong></p>
+I chose to implement the 48 team version of the world cup (16 groups of 3) instead of the 32 team version because it will be used starting in the 2026 world cup and then continue to be used. Also, in the 48 team version, each region gets a concrete number of spots and there are no more playoffs, while in the 32 team version, some regions like Oceania get .5 spots and some teams must compete in inter-regional playoff games. First, I sorted all the teams in arrays based on region and then each team played each other team in the region. Then, if some region was given X spots for the tournament, the top X teams in that region were added to a qualifiers ArrayList. The qualifiers were then randomly sorted in 16 groups, where each team in the group plays both others, and the top 2 qualify for the knockout stages. 
+<p><strong>Sample Output</strong></p>
+<table border = "1">
+<tr>
+  <th>Group A</th>
+  <th>Group B</th>
+  <th>Group C</th> 
+  <th>Group D</th>
+</tr>
+<tr>
+  <td>Morocco: 4</td>
+  <td>England: 4</td>
+  <td>El Salvador: 4</td>
+  <td>Senegal: 6</td>
+</tr>
+<tr>
+  <td>Curaçao: 2</td>
+  <td>Italy: 3</td>
+  <td>Romania: 2</td>
+  <td>Saudi Arabia: 3 </td>
+</tr>
+<tr>
+  <td>Serbia: 1</td>
+  <td>Egypt: 1</td>
+  <td>Iran: 1</td>
+  <td>Switzerland: 0</td>
+</tr>
+<tr>
+  <th>Group E</th>
+  <th>Group F</th>
+  <th>Group G</th>
+  <th>Group H</th>
+</tr>
+<tr>
+  <td>Australia: 4</td>
+  <td>Wales: 2</td>
+  <td>Colombia: 4</td>
+  <td>Poland: 4</td>
+</tr>
+<tr>
+  <td>Korea Republic: 3</td>
+  <td>Nigeria: 2 </td>
+  <td>Ghana: 2</td>
+  <td>Cameroon: 2</td>
+</tr>
+<tr>
+  <td>Jamaica: 1</td>
+  <td>Honduras: 2</td>
+  <td>Peru: 1</td>
+  <td>Qatar: 1</td>
+</tr>
+<tr>
+  <th>Group I</th>
+  <th>Group J</th>
+  <th>Group K</th>
+  <th>Group L</th>
+</tr>
+<tr>
+  <td>Sweden: 4</td>
+  <td>Costa Rica: 4</td>
+  <td>Brazil: 2</td>
+  <td>Belgium: 4</td>
+</tr>
+<tr>
+  <td>Japan: 3</td>
+  <td>France: 4</td>
+  <td>United Arab Emirates: 2 &nbsp; </td>
+  <td>Paraguay: 3</td>
+</tr>
+<tr>
+  <td>Congo DR: 1</td>
+  <td>New Zealand: 0 &nbsp; </td>
+  <td>Portugal: 2</td>
+  <td>China: 1</td>
+</tr>
+<tr>
+  <th>Group M</th>
+  <th>Group N</th>
+  <th>Group O</th>
+  <th>Group P</th>
+</tr>
+<tr>
+  <td>Tunisia: 4</td>
+  <td>Germany: 4</td>
+  <td>Netherlands: 4</td>
+  <td>Denmark: 4</td>
+</tr>
+<tr>
+  <td>Croatia: 4</td>
+  <td>Venezuela: 4</td>
+  <td>Spain: 2</td>
+  <td>Algeria: 3</td>
+</tr>
+<tr>
+  <td>Solomon Islands: 0 &nbsp; </td>
+  <td>Mexico: 0</td>
+  <td>Uruguay: 1</td>
+  <td>United States: 1 &nbsp; </td>
+</tr>
+</table>
+<br>
+Round of 32 <br>
+<br>
+Italy eliminates Morocco <br>
+El Salvador eliminates Saudi Arabia<br>
+Australia eliminates Nigeria<br>
+Colombia eliminates Cameroon<br>
+Sweden eliminates France<br>
+Brazil eliminates Paraguay<br>
+Venezuela eliminates Tunisia<br>
+Netherlands eliminates Algeria<br>
+England eliminates Curaçao<br>
+Senegal eliminates Romania<br>
+Korea Republic eliminates Wales<br>
+Poland eliminates Ghana<br>
+Costa Rica eliminates Japan<br>
+United Arab Emirates eliminates Belgium<br>
+Germany eliminates Croatia<br>
+Spain eliminates Denmark<br>
+<br>
+Round of 16<br>
+<br>
+Italy eliminates El Salvador<br>
+Colombia eliminates Australia<br>
+Sweden eliminates Brazil<br>
+Venezuela eliminates Netherlands<br>
+England eliminates Senegal<br>
+Poland eliminates Korea Republic<br>
+Costa Rica eliminates United Arab Emirates<br>
+Spain eliminates Germany<br>
+<br>
+Quarter-Finals<br>
+<br>
+Colombia eliminates Italy<br>
+Sweden eliminates Venezuela<br>
+England eliminates Poland<br>
+Spain eliminates Costa Rica<br>
+<br>
+Semi-Finals<br>
+<br>
+Sweden eliminates Colombia<br>
+Spain eliminates England<br>
+<br>
+World Cup Final<br>
+<br>
+Spain wins the World Cup!<br>
+</html>
